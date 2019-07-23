@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: 2019年6月22 | Hexo</title>
+  <title>Task2 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/tags/2019年6月22/index.html">
+  <meta name="description" content="Task2 任务报告任务内容·任务说明编写C++控制台程序，分别应用Vector、Map、Set等容器实现读取ASCII类型STL文件，并另存为ASCII、Binary格式PLY文件，并分别记录程序运行的时间 ·输入输出1 输入文件“test.stl”(模型大小30M)。 2 输出：”test.ply”(ASCII)、“test.ply”(Binary) 3 将程序运行所得的ply文件用Geoma">
+<meta name="keywords" content="2019年6月23">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Task2">
+<meta property="og:url" content="http://yoursite.com/2019/06/23/Task2/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="Task2 任务报告任务内容·任务说明编写C++控制台程序，分别应用Vector、Map、Set等容器实现读取ASCII类型STL文件，并另存为ASCII、Binary格式PLY文件，并分别记录程序运行的时间 ·输入输出1 输入文件“test.stl”(模型大小30M)。 2 输出：”test.ply”(ASCII)、“test.ply”(Binary) 3 将程序运行所得的ply文件用Geoma">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-07-23T04:42:25.857Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="Task2">
+<meta name="twitter:description" content="Task2 任务报告任务内容·任务说明编写C++控制台程序，分别应用Vector、Map、Set等容器实现读取ASCII类型STL文件，并另存为ASCII、Binary格式PLY文件，并分别记录程序运行的时间 ·输入输出1 输入文件“test.stl”(模型大小30M)。 2 输出：”test.ply”(ASCII)、“test.ply”(Binary) 3 将程序运行所得的ply文件用Geoma">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -150,60 +155,194 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Task2" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/06/22/Task1/" class="archive-article-date">
-  	<time datetime="2019-06-22T06:57:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-22</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/06/22/Task1/">Task1</a>
+    <h1 class="article-title" itemprop="name">
+      Task2
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2019/06/23/Task2/" class="archive-article-date">
+  	<time datetime="2019-06-23T04:26:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task2-任务报告"><a href="#Task2-任务报告" class="headerlink" title="Task2 任务报告"></a>Task2 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>编写C++控制台程序，分别应用Vector、Map、Set等容器实现读取ASCII类型STL文件，并另存为ASCII、Binary格式PLY文件，并分别记录程序运行的时间</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 输入文件“test.stl”(模型大小30M)。</p>
+<p>2 输出：”test.ply”(ASCII)、“test.ply”(Binary)</p>
+<p>3 将程序运行所得的ply文件用Geomagic软件打开，模型正常显示，则程序运行成功。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>使用Point类以及Facet类分别存储点的信息以及面片的信息，Point由四部分组成：x坐标，y坐标，z坐标以及index点的位置信息。<br>vector:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 数据读取</span><br><span class="line">	vector&lt;Point&gt;nodeDate;</span><br><span class="line">	vector&lt;Facet&gt;facetsDate;</span><br></pre></td></tr></table></figure>
+
+<p>对sort算法实现重载来实现排序，采用erase实现去重</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sort(nodeDate.begin(), nodeDate.end());</span><br><span class="line">nodeDate.erase(unique(nodeDate.begin(), nodeDate.end()), nodeDate.end());</span><br></pre></td></tr></table></figure>
+
+<p>map:采用将点存在map的key中，map实现自动去重，然后获得去重后的点的信息，并更新点的index，在获取面片信息的时候，直接将点加入到面片中，就可以将面片，点对应起来。<br>set:使用set容器存储面片和点的信息,采用set的不能重复机制，实现点的去重。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">std::set&lt;Point&gt;pointDate;</span><br><span class="line">std::set&lt;Facet&gt;facetDate;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><p>以下是map实现的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line">// 使用map保存stl数据</span><br><span class="line">void mapDate()</span><br><span class="line">&#123;</span><br><span class="line">	// 数据读取</span><br><span class="line">	int count = 0;</span><br><span class="line">	map&lt;Point, int&gt;_mapPoint;</span><br><span class="line">	map&lt;int, Facet&gt;_mapFacet;</span><br><span class="line">	vector&lt;Point&gt;nodeDate;</span><br><span class="line">	vector&lt;Facet&gt;facetsDate;</span><br><span class="line">	vector&lt;int&gt;facetList;</span><br><span class="line">	vector&lt;Facet&gt;facetsDate1;</span><br><span class="line">	map&lt;string, int&gt;_hopelist;</span><br><span class="line">	map&lt;Point, int&gt;listPoint;</span><br><span class="line">	int trangle = 0;</span><br><span class="line">	string s;</span><br><span class="line">	string str;</span><br><span class="line">	Facet facet1;</span><br><span class="line">	int countPoint = 0;</span><br><span class="line">	ifstream fin(&quot;D:\\vs2017projects\\Task3\\test.stl&quot;, ios::in);</span><br><span class="line">	float x1, y1, z1;</span><br><span class="line">	float x2, y2, z2;</span><br><span class="line">	float x3, y3, z3;</span><br><span class="line">	fin &gt;&gt; s &gt;&gt; s &gt;&gt; str;</span><br><span class="line">	while (str == &quot;facet&quot;)</span><br><span class="line">	&#123;</span><br><span class="line">		Facet facet1;</span><br><span class="line">		fin &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; x1 &gt;&gt; y1 &gt;&gt; z1 &gt;&gt; s</span><br><span class="line">			&gt;&gt; x2 &gt;&gt; y2 &gt;&gt; z2 &gt;&gt; s</span><br><span class="line">			&gt;&gt; x3 &gt;&gt; y3 &gt;&gt; z3 &gt;&gt; s &gt;&gt; s &gt;&gt; str;</span><br><span class="line">		// 存储点的信息</span><br><span class="line">		Point point1(x1, y1, z1);</span><br><span class="line">		Point point2(x2, y2, z2);</span><br><span class="line">		Point point3(x3, y3, z3);</span><br><span class="line">		nodeDate.push_back(point1);</span><br><span class="line">		nodeDate.push_back(point2);</span><br><span class="line">		nodeDate.push_back(point3);</span><br><span class="line">		// 面片信息存储</span><br><span class="line">		facet1.addFacet(point1);</span><br><span class="line">		facet1.addFacet(point2);</span><br><span class="line">		facet1.addFacet(point3);</span><br><span class="line">		_mapFacet.insert(pair&lt;int, Facet&gt;(trangle, facet1));</span><br><span class="line">		trangle++;</span><br><span class="line">		if (str == &quot;endsolid&quot;)</span><br><span class="line">		&#123;</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	for (auto it = nodeDate.begin();it != nodeDate.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">		_mapPoint.insert(pair&lt;Point,int&gt;(*it,0));</span><br><span class="line">	&#125;</span><br><span class="line">	int mapcount = 0;</span><br><span class="line">	for (auto it = _mapPoint.begin();it != _mapPoint.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">		it-&gt;second = mapcount;</span><br><span class="line">		mapcount++;</span><br><span class="line">	&#125;</span><br><span class="line">	cout &lt;&lt; _mapPoint.size() &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; _mapFacet.size() &lt;&lt; endl;</span><br><span class="line">	for (auto it = _mapFacet.begin();it != _mapFacet.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">		Point point1 = it-&gt;second._facelist[0];</span><br><span class="line">		auto itt = _mapPoint.find(point1);</span><br><span class="line">		if (itt != _mapPoint.end())</span><br><span class="line">		&#123;</span><br><span class="line">			it-&gt;second.index1 = itt-&gt;second;</span><br><span class="line">			//cout &lt;&lt; it-&gt;second.index1 &lt;&lt; endl;</span><br><span class="line">		&#125;</span><br><span class="line">		Point point2 = it-&gt;second._facelist[1];</span><br><span class="line">		itt = _mapPoint.find(point2);</span><br><span class="line">		if (itt != _mapPoint.end())</span><br><span class="line">		&#123;</span><br><span class="line">			it-&gt;second.index2 = itt-&gt;second;</span><br><span class="line">			//cout &lt;&lt; it-&gt;second.index2 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line">		Point point3 = it-&gt;second._facelist[2];</span><br><span class="line">		itt = _mapPoint.find(point3);</span><br><span class="line">		if (itt != _mapPoint.end())</span><br><span class="line">		&#123;</span><br><span class="line">			it-&gt;second.index3 = itt-&gt;second;</span><br><span class="line">			//cout &lt;&lt; it-&gt;second.index3 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	string fileName= &quot;D:\\vs2017projects\\Task2\\maptest.ply&quot;;</span><br><span class="line">	ofstream OpenFile(fileName.c_str());</span><br><span class="line">	OpenFile.precision(std::numeric_limits&lt;double&gt;::digits10);</span><br><span class="line">	//ofstream OpenFile(&quot;D:\\vs2017projects\\Task2\\testmap.ply&quot;);</span><br><span class="line">	if (OpenFile.fail())</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;打开文件错误!&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	OpenFile &lt;&lt; &quot;ply&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;format ascii 1.0&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;comment generated by platoply&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;element vertex &quot; &lt;&lt; _mapPoint.size() &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 x&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 y&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 z&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;element face &quot; &lt;&lt; _mapFacet.size() &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property list uint8 int32 vertex_indices&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;end_header&quot; &lt;&lt; endl;</span><br><span class="line">	// 读取点的信息</span><br><span class="line">	for (auto iter = _mapPoint.begin(); iter != _mapPoint.end(); iter++)</span><br><span class="line">	&#123;</span><br><span class="line">		OpenFile &lt;&lt; iter-&gt;first.x &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;first.y &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;first.z &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	for (auto iter = _mapFacet.begin(); iter != _mapFacet.end(); iter++)</span><br><span class="line">	&#123;</span><br><span class="line">		OpenFile &lt;&lt; &quot; &quot; &lt;&lt; 3 &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second.index1 &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second.index2 &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second.index3 &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果-1"><a href="#·运行结果-1" class="headerlink" title="·运行结果 1"></a>·运行结果 1</h3>
+
+
+<h3 id="·运行结果-2"><a href="#·运行结果-2" class="headerlink" title="·运行结果 2"></a>·运行结果 2</h3>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年6月22</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年6月23</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/06/23/Task2/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+    <a href="/2019/06/27/Task3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Task3
+        
+      </div>
+    </a>
   
   
-    </div></section>
+    <a href="/2019/06/22/Task1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Task1</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -226,9 +365,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

@@ -152,6 +152,782 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Task10" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/16/Task10/">Task10</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/16/Task10/" class="archive-article-date">
+  	<time datetime="2019-07-16T07:54:21.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task10-任务报告"><a href="#Task10-任务报告" class="headerlink" title="Task10 任务报告"></a>Task10 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>各自使用任务9所搭建的软件框架将读取STL模型、另存为PLY模型、计算模型的面积与体积、搜索指定节点的N环邻域等功能集成起来。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>在之前完成的基础上，添加MessageBox,显示面积以及体积的计算结果。添加Dialog实现点的坐标index以及N环领域N的获取，将获取的值传入求领域函数，并保存计算结果。</p>
+<p>将STL文件转换成PLY文件，根据PLY文件的基本格式，将点的顺序以及每一个面片进行对应并进行另存为一个test.PLY文件。</p>
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">// 领域计算代码</span><br><span class="line">void GetFieldcirculation(int index, int nField)</span><br><span class="line">&#123;</span><br><span class="line">	int size = 0;</span><br><span class="line">	// 根据index找到点,注意重复问题，已经判断的点不能再次加入</span><br><span class="line">	list&lt;int&gt;_listPointTemp;</span><br><span class="line">	auto ittt = model.modelPoint.find(index);</span><br><span class="line">	if (ittt != model.modelPoint.end())</span><br><span class="line">	&#123;</span><br><span class="line">		getPoint = ittt-&gt;second;</span><br><span class="line">	&#125;</span><br><span class="line">	_listPointTemp.push_back(index);</span><br><span class="line">	listPoint.insert(index);</span><br><span class="line">	while (nField &gt; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		int start = 0, size = _listPointTemp.size();</span><br><span class="line">		while ((!_listPointTemp.empty()) &amp;&amp; (start &lt; size))</span><br><span class="line">		&#123;</span><br><span class="line">			// 出栈,返回第一个函数</span><br><span class="line">			//cout &lt;&lt; &quot;Point Size is : &quot; &lt;&lt; _listPointTemp.size() &lt;&lt; endl;</span><br><span class="line">			index = _listPointTemp.front();</span><br><span class="line">			//cout &lt;&lt; &quot;index :&quot; &lt;&lt; index &lt;&lt; endl;</span><br><span class="line">			_listPointTemp.pop_front();</span><br><span class="line">			for (auto it = model.modelPoint.begin();it != model.modelPoint.end();it++)</span><br><span class="line">			&#123;</span><br><span class="line">				if (index == it-&gt;second.index)</span><br><span class="line">				&#123;</span><br><span class="line">					vector&lt;int&gt;listInt = it-&gt;second.listfacet;</span><br><span class="line">					for (auto i = listInt.begin();i != listInt.end();i++)</span><br><span class="line">					&#123;</span><br><span class="line">						auto it = model.modelFacet.find(*i);</span><br><span class="line">						//Facet facet=it-&gt;second;</span><br><span class="line">						if (listPoint.count(it-&gt;second._vertex_1.index) == 0)</span><br><span class="line">						&#123;</span><br><span class="line">							listPoint.insert(it-&gt;second._vertex_1.index);</span><br><span class="line">							_listPointTemp.push_back(it-&gt;second._vertex_1.index);</span><br><span class="line">							_setPoint.insert(it-&gt;second._vertex_1);</span><br><span class="line">						&#125;</span><br><span class="line">						if (listPoint.count(it-&gt;second._vertex_2.index) == 0)</span><br><span class="line">						&#123;</span><br><span class="line">							listPoint.insert(it-&gt;second._vertex_2.index);</span><br><span class="line">							_listPointTemp.push_back(it-&gt;second._vertex_2.index);</span><br><span class="line">							_setPoint.insert(it-&gt;second._vertex_2);</span><br><span class="line"></span><br><span class="line">						&#125;</span><br><span class="line">						if (listPoint.count(it-&gt;second._vertex_3.index) == 0)</span><br><span class="line">						&#123;</span><br><span class="line">							listPoint.insert(it-&gt;second._vertex_3.index);</span><br><span class="line">							_listPointTemp.push_back(it-&gt;second._vertex_3.index);</span><br><span class="line">							_setPoint.insert(it-&gt;second._vertex_3);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			size--;</span><br><span class="line">		&#125;</span><br><span class="line">		nField--;</span><br><span class="line">	&#125;</span><br><span class="line">	cout &lt;&lt; &quot; list is :&quot; &lt;&lt; listPoint.size() &lt;&lt; endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// 获取输入值，这里Field表示的是一个dialog的一个类</span><br><span class="line">void COpenGLDrawingView::OnField()</span><br><span class="line">&#123;</span><br><span class="line">	Field f;</span><br><span class="line">	if (f.DoModal()==IDOK)</span><br><span class="line">	&#123;</span><br><span class="line">		// 获取输入框中的值</span><br><span class="line">		index = f.m_point;</span><br><span class="line">		field = f.field;</span><br><span class="line">		// 领域计算</span><br><span class="line">		GetFieldcirculation(index, field);</span><br><span class="line">		// 重新绘图</span><br><span class="line">		Invalidate();</span><br><span class="line">	&#125;</span><br><span class="line">	// TODO: 在此添加命令处理程序代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// 另存为</span><br><span class="line">void writeFile(CString path, map&lt;int, Facet&gt;mapFacet, map&lt;int, MyPoint&gt;mapPoint)</span><br><span class="line">&#123;</span><br><span class="line">	ofstream OpenFile(path);</span><br><span class="line">	if (OpenFile.fail())</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;打开文件错误!&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	OpenFile &lt;&lt; &quot;ply&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;format ascii 1.0&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;comment generated by platoply&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;element vertex  &quot; &lt;&lt; model.modelPoint.size() &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 x&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 y&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 z&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;element face &quot; &lt;&lt; model.modelFacet.size() &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property list uint8 int32 vertex_indices&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;end_header&quot; &lt;&lt; endl;</span><br><span class="line">	// 读取点的坐标信息</span><br><span class="line">	for (auto iter = model.modelPoint.begin(); iter != model.modelPoint.end(); iter++)</span><br><span class="line">	&#123;</span><br><span class="line">		OpenFile &lt;&lt; iter-&gt;second._x &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second._y &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second._z &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	for (auto iter = model.modelFacet.begin(); iter != model.modelFacet.end(); iter++)</span><br><span class="line">	&#123;</span><br><span class="line">		OpenFile &lt;&lt; &quot; &quot; &lt;&lt; 3 &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second._vertex_1.index &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second._vertex_2.index &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second._vertex_3.index &lt;&lt; endl;</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><p> 面积计算</p>
+<img src="/2019/07/16/Task10/Task10_1.png" title="This is an image">
+<p>体积计算</p>
+<img src="/2019/07/16/Task10/Task10_2.png" title="This is an image">
+<p>获取领域，点坐标</p>
+<img src="/2019/07/16/Task10/Task10_3.png" title="This is an image">
+<p> 结果显示</p>
+<img src="/2019/07/16/Task10/Task10_4.png" title="This is an image">
+
+<p>另存为结果显示</p>
+<img src="/2019/07/16/Task10/Task10_5.png" title="This is an image">
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">2019年7月16日</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/16/Task10/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Task9" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/12/Task9/">Task9</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/12/Task9/" class="archive-article-date">
+  	<time datetime="2019-07-12T07:54:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task9-任务报告"><a href="#Task9-任务报告" class="headerlink" title="Task9 任务报告"></a>Task9 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>1 使用MFC+OpenGL创建离散数据读取、显示、操作软件框架。其中，建议使用MFC多文档框架进行开发。（需要有旋转平移的基本交互功能）<br>2 使用QT+VTK创建离散数据读取、显示、操作软件框架。显示窗口可以直接使用Qvtkwidget（可以使用其默认的旋转平移等交互方式，不需要在重载定义）</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>首先需要在MFC中配置OPENGL,主要的步骤如下：</p>
+<p>1 创建MFC程序，选择单文档。</p>
+<p>2 项目中添加OPENGL环境。在stdafx.h文件中引用opengl。</p>
+<p>3 整合MFC与opengl</p>
+<p>4 设置基本参数</p>
+<p>5 画图，显示</p>
+<p>6 鼠标实现旋转，缩放</p>
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">// CnewTask9View 绘图</span><br><span class="line"></span><br><span class="line">void CnewTask9View::OnDraw(CDC* /*pDC*/)</span><br><span class="line">&#123;</span><br><span class="line">	CnewTask9Doc* pDoc = GetDocument();</span><br><span class="line">	ASSERT_VALID(pDoc);</span><br><span class="line">	if (!pDoc)</span><br><span class="line">		return;</span><br><span class="line">	// TODO: 在此添加命令处理程序代码</span><br><span class="line">// TODO: 在此添加命令处理程序代码</span><br><span class="line">	cout &lt;&lt; &quot;面片数 &quot; &lt;&lt; model.modelFacet.size() &lt;&lt; endl;</span><br><span class="line">	glClear(GL_COLOR_BUFFER_BIT | GL_DOUBLE);</span><br><span class="line">	glMatrixMode(GL_MODELVIEW);	</span><br><span class="line">	//double *data = m_arcball.GetRotationData();</span><br><span class="line">	glLoadIdentity();</span><br><span class="line">	gluLookAt(0, 0, 2, 0, 0, 0, 0, 1, 0);</span><br><span class="line">	//glMultMatrixd(data);</span><br><span class="line">	//glScaled(m_dScale+1, m_dScale+1, m_dScale+1);</span><br><span class="line">	//glTranslated(m_translate[0], m_translate[1], m_translate[2]);</span><br><span class="line">	for (auto it = model.modelFacet.begin();it != model.modelFacet.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">		glPushMatrix();</span><br><span class="line">		glBegin(GL_TRIANGLES);</span><br><span class="line">		glColor3f(1.0, 1.0, 1.0);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_1._x / 100, it-&gt;second._vertex_1._y / 100, it-&gt;second._vertex_1._z / 100);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_3._x / 100, it-&gt;second._vertex_3._y / 100, it-&gt;second._vertex_3._z / 100);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_2._x / 100, it-&gt;second._vertex_2._y / 100, it-&gt;second._vertex_2._z / 100);</span><br><span class="line">		glEnd(); //三角形</span><br><span class="line">		glPopMatrix();</span><br><span class="line">		// 画线</span><br><span class="line">		glBegin(GL_LINES);</span><br><span class="line">		glColor3f(0.0, 1.0, 0.0);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_1._x / 100, it-&gt;second._vertex_1._y / 100, it-&gt;second._vertex_1._z / 100);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_3._x / 100, it-&gt;second._vertex_3._y / 100, it-&gt;second._vertex_3._z / 100);</span><br><span class="line">		glEnd();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		glBegin(GL_LINES);</span><br><span class="line">		glColor3f(0.0, 1.0, 0.0);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_1._x / 100, it-&gt;second._vertex_1._y / 100, it-&gt;second._vertex_1._z / 100);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_2._x / 100, it-&gt;second._vertex_2._y / 100, it-&gt;second._vertex_2._z / 100);</span><br><span class="line">		glEnd();</span><br><span class="line"></span><br><span class="line">		glBegin(GL_LINES);</span><br><span class="line">		glColor3f(0.0, 1.0, 0.0);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_2._x / 100, it-&gt;second._vertex_2._y / 100, it-&gt;second._vertex_2._z / 100);</span><br><span class="line">		glVertex3f(it-&gt;second._vertex_3._x / 100, it-&gt;second._vertex_3._y / 100, it-&gt;second._vertex_3._z / 100);</span><br><span class="line">		glEnd();</span><br><span class="line">	&#125;</span><br><span class="line">	SwapBuffers(wglGetCurrentDC());</span><br><span class="line">	// 交换缓冲区  </span><br><span class="line">	cout &lt;&lt; &quot; 绘制完成&quot; &lt;&lt; endl;</span><br><span class="line">	// TODO: 在此处为本机数据添加绘制代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><p>打开文件进行选择。</p>
+<img src="/2019/07/12/Task9/Task9_1.png" title="This is an image">
+<p>选择后读取数据，显示。</p>
+<img src="/2019/07/12/Task9/Task9_2.png" title="This is an image">交互
+<p>鼠标滑轮实现缩放，左右键实现旋转，键盘的上下左右键实现平移</p>
+<img src="/2019/07/12/Task9/Task9_3.png" title="This is an image">
+<img src="/2019/07/12/Task9/Task9_4.png" title="This is an image">
+<img src="/2019/07/12/Task9/Task9_5.png" title="This is an image">
+<img src="/2019/07/12/Task9/Task9_6.png" title="This is an image">
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">2019年7月12日</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/12/Task9/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Task8" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/10/Task8/">Task8</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/10/Task8/" class="archive-article-date">
+  	<time datetime="2019-07-10T07:54:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task8-任务报告"><a href="#Task8-任务报告" class="headerlink" title="Task8 任务报告"></a>Task8 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>1 利用mimics软件，读取人体脊柱CT图像序列，重建人体脊柱模型（人类脊柱由33块椎骨（颈椎7块，胸椎12块，腰椎5块，骶骨、尾骨共9块）组成）。其中，将骶骨、尾骨等9块骨模型重建为一块（重建时不需在分割）。<br>2 学习QT、VTK、MFC等相关知识。</p>
+<p>2 、学习书籍《opengl_tutorial_2017_06_07》，学习OpenGL的图形绘制函数，掌握其调用方式。</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 输入：脊椎CT图像序列。</p>
+<p>2 输出：单个脊柱STL模型（25个）、整体脊柱STL模型（1个）。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p> Mimics：导入CT图像序列，选择图像最多的序列进行处理。导入成功之后使用Thresholding对图像进行分割，选择Fill holes,Bone(CT)，然后选择三维图像显示，对图像进行擦除处理。将所得到的部分使用splite Mask进行分割，得到想要的部分。</p>
+<p>3-matic：主要是对图像进行平滑处理，选择FINISH里面的local smooth进行处理。</p>
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><img src="/2019/07/10/Task8/Task8_1.png" title="This is an image">
+<img src="/2019/07/10/Task8/Task8_2.png" title="This is an image">
+<img src="/2019/07/10/Task8/Task8_3.png" title="This is an image">
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">2019年7月10日</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/10/Task8/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Task7" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/08/Task7/">Task7</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/08/Task7/" class="archive-article-date">
+  	<time datetime="2019-07-08T07:53:57.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task7-任务报告"><a href="#Task7-任务报告" class="headerlink" title="Task7 任务报告"></a>Task7 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>1 编写一C++控制台程序，在任务6搭建的OpenGL图形显示框架的基础上进行一定的扩展。要求读入ASCII格式PLY模型，并输入一顶点序号与邻域环数N。之后将输入的PLY模型放到OpenGL界面显示，其中需要对指定顶点的N环领域内的所有顶点进行高亮显示（可以通过将点的尺寸设大并改变顶点颜色的方式）。</p>
+<p>2 熟悉MIMICS软件的操作方法。</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 输入：bunny.ply、指定顶点序号、环数N。</p>
+<p>2 输出：OpenGL的图形界面显示带高亮顶点的兔子模型。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>1 首先读入stl文件信息，存储点以及面片信息，在task3的基础上获得N环领域的点。<br>2 其次，根据所读入信息，转成三维模型。<br>3 最后，实现鼠标点击事件，鼠标左右键实现模型的旋转，滑轮实现模型的缩放。</p>
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">void display_func()</span><br><span class="line">&#123;</span><br><span class="line">	static int z = 0;</span><br><span class="line">	std::cout &lt;&lt; &quot;display:&quot; &lt;&lt; z++ &lt;&lt; std::endl;</span><br><span class="line">	// 表示要清除颜色缓冲以及深度缓冲，可以使用以下标志位</span><br><span class="line">	// GL_COLOR_BUFFER_BIT:    当前可写的颜色缓冲</span><br><span class="line">	// GL_DEPTH_BUFFER_BIT:    深度缓冲</span><br><span class="line">	// GL_ACCUM_BUFFER_BIT : 累积缓冲</span><br><span class="line">	// GL_STENCIL_BUFFER_BIT : 模板缓冲</span><br><span class="line">	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);</span><br><span class="line"></span><br><span class="line">	glMatrixMode(GL_MODELVIEW);</span><br><span class="line">	// 设置当前矩阵</span><br><span class="line">	glLoadMatrixf(modelview_matrix);</span><br><span class="line"></span><br><span class="line">	drawBunny();</span><br><span class="line"></span><br><span class="line">	// 画线</span><br><span class="line">	// 交换两个缓冲区的指针，当绘制完成，将结果显示在屏幕上，从而解决频繁刷新导致的画面闪烁问题</span><br><span class="line">	glutSwapBuffers();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">// 画图函数</span><br><span class="line">void drawBunny()</span><br><span class="line">&#123;</span><br><span class="line">	// 旋转设置</span><br><span class="line">	glRotatef(angle, 0, 1, 0);</span><br><span class="line">	GLfloat color[] = &#123; .4f,.4f,.4f,1.0f &#125;;</span><br><span class="line">	// 反射</span><br><span class="line">	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, color);</span><br><span class="line"></span><br><span class="line">	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 20.0);</span><br><span class="line"></span><br><span class="line">	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);</span><br><span class="line"></span><br><span class="line">	// 这个函数告诉接下来要做什么的声明，参数有三种模式：</span><br><span class="line">	// GL_PROJECTION 投影, GL_MODELVIEW 模型视图, GL_TEXTURE 纹理</span><br><span class="line">	glMatrixMode(GL_MODELVIEW);</span><br><span class="line">	// 绘制透明物体</span><br><span class="line">	for (auto it = vecFacet.begin();it != vecFacet.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">			glPushMatrix();</span><br><span class="line">			glBegin(GL_TRIANGLES);</span><br><span class="line">		    glColor3f(0.0, 0.0, 1.0);</span><br><span class="line">			glVertex3f(it-&gt;_vertex_1._x/2 , it-&gt;_vertex_1._y/2 , it-&gt;_vertex_1._z/2 );</span><br><span class="line">			glVertex3f(it-&gt;_vertex_3._x / 2, it-&gt;_vertex_3._y / 2, it-&gt;_vertex_3._z / 2);</span><br><span class="line">			glVertex3f(it-&gt;_vertex_2._x / 2, it-&gt;_vertex_2._y / 2, it-&gt;_vertex_2._z / 2);</span><br><span class="line">			glEnd(); //三角形</span><br><span class="line">			glPopMatrix();</span><br><span class="line"></span><br><span class="line">			// 画线</span><br><span class="line">			glBegin(GL_LINES);</span><br><span class="line">			glColor3f(0.0, 1.0, 0.0);</span><br><span class="line">			glVertex3f(it-&gt;_vertex_1._x / 2, it-&gt;_vertex_1._y / 2, it-&gt;_vertex_1._z / 2);</span><br><span class="line">			glVertex3f(it-&gt;_vertex_3._x / 2, it-&gt;_vertex_3._y / 2, it-&gt;_vertex_3._z / 2);</span><br><span class="line">			glEnd();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">			glBegin(GL_LINES);</span><br><span class="line">			glColor3f(0.0, 1.0, 0.0);</span><br><span class="line">			glVertex3f(it-&gt;_vertex_1._x / 2, it-&gt;_vertex_1._y / 2, it-&gt;_vertex_1._z / 2);</span><br><span class="line">			glVertex3f(it-&gt;_vertex_2._x / 2, it-&gt;_vertex_2._y / 2, it-&gt;_vertex_2._z / 2);</span><br><span class="line">			glEnd();</span><br><span class="line"></span><br><span class="line">			glBegin(GL_LINES);</span><br><span class="line">			glColor3f(0.0, 1.0, 0.0);</span><br><span class="line">			glVertex3f(it-&gt;_vertex_3._x / 2, it-&gt;_vertex_3._y / 2, it-&gt;_vertex_3._z / 2);</span><br><span class="line">			glVertex3f(it-&gt;_vertex_2._x / 2, it-&gt;_vertex_2._y / 2, it-&gt;_vertex_2._z / 2);</span><br><span class="line">			glEnd();</span><br><span class="line">			</span><br><span class="line">	&#125;</span><br><span class="line">	glPointSize(5.0);</span><br><span class="line">	glBegin(GL_POINTS);</span><br><span class="line">	glColor3f(1.0, 0.0, 0.0);</span><br><span class="line">	glVertex3f(getPoint._x / 2, getPoint._y / 2, getPoint._z / 2);</span><br><span class="line">	glEnd();</span><br><span class="line">	for (auto it = _setPoint.begin();it != _setPoint.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line"></span><br><span class="line">			glBegin(GL_POINTS);</span><br><span class="line">			glColor3f(1.0,1.0, 0.0);</span><br><span class="line">			glVertex3f(it-&gt;_x / 2, it-&gt;_y / 2, it-&gt;_z / 2);</span><br><span class="line">			glEnd();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><p>图中红色的点表示源点，黄色的点表示n环领域上的点。</p>
+<img src="/2019/07/08/Task7/Task7_1.png" title="This is an image">
+<img src="/2019/07/08/Task7/Task7_2.png" title="This is an image">
+<p>交互事件，缩放，旋转</p>
+<img src="/2019/07/08/Task7/Task7_3.png" title="This is an image">
+<img src="/2019/07/08/Task7/Task7_4.png" title="This is an image">
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年7月8日</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/08/Task7/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Task6" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/06/Task6/">Task6</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/06/Task6/" class="archive-article-date">
+  	<time datetime="2019-07-06T07:53:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task6-任务报告"><a href="#Task6-任务报告" class="headerlink" title="Task6 任务报告"></a>Task6 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>1 编写一C++控制台程序，搭建OpenGL图形显示框架（需要配置OpenGL相关库文件），通过OpenGL函数绘制简易模型（cube、sphere等）并在框架中显示）。</p>
+<p>2 、学习书籍《opengl_tutorial_2017_06_07》，学习OpenGL的图形绘制函数，掌握其调用方式。</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 输入：无。</p>
+<p>2 输出：OpenGL的图形显示界面。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>首先在vs里面配置opengl，调用opengl的函数实现。本程序实现“一只独立特行的猪”的模型。分为以下几个步骤：1 窗体设置 2 画图 3 显示 4 鼠标点击实现旋转,鼠标左键控制模型旋转，鼠标右键停止旋转，鼠标滑轮实现缩放。</p>
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">// 显示</span><br><span class="line">void display_func()</span><br><span class="line">&#123;</span><br><span class="line">	// 次数</span><br><span class="line">	//static int z = 0;</span><br><span class="line">	//cout &lt;&lt; &quot;显示：&quot; &lt;&lt; z++ &lt;&lt; &quot; &quot; &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">	// 表示要清除颜色缓冲</span><br><span class="line">	glClear(GL_COLOR_BUFFER_BIT);</span><br><span class="line">	// 指定显示模式</span><br><span class="line">	glMatrixMode(GL_MODELVIEW);</span><br><span class="line">	// 恢复初始坐标</span><br><span class="line">	glLoadIdentity();</span><br><span class="line">	// 该函数定义一个视图矩阵，并与当前矩阵相乘</span><br><span class="line">	gluLookAt(ex[view], ey[view], ez[view], fx[view], fy[view], fz[view], 0.0, 1.0, 0.0);</span><br><span class="line"></span><br><span class="line">	// 画网格线</span><br><span class="line">	glColor3f(0.82, 0.82, 0.82);</span><br><span class="line">	glBegin(GL_LINES);</span><br><span class="line">	float i, j;</span><br><span class="line">	for (i = -50; i &lt;= 50; i = i + 0.2)</span><br><span class="line">	&#123;</span><br><span class="line">		glVertex3f(i, -0.25, -50);</span><br><span class="line">		glVertex3f(i, -0.25, 50);</span><br><span class="line">	&#125;</span><br><span class="line">	for (j = -50; j &lt;= 50; j += 0.2)</span><br><span class="line">	&#123;</span><br><span class="line">		glVertex3f(-50, -0.25, j);</span><br><span class="line">		glVertex3f(50, -0.25, j);</span><br><span class="line">	&#125;</span><br><span class="line">	glEnd();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	 drawPig();</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	// 交换两个缓冲区指针</span><br><span class="line">	glutSwapBuffers();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br></pre></td><td class="code"><pre><span class="line">// 画图函数</span><br><span class="line">void drawPig()</span><br><span class="line">&#123;</span><br><span class="line">	// 旋转设置</span><br><span class="line">	glRotatef(angle, 0, 1, 0);</span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(1.0, 0.8, 0.8);</span><br><span class="line">	glutSolidSphere(0.25f, 100, 100);  //身体</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glTranslatef(0, -0.2, 0);</span><br><span class="line">	glColor3f(1.0, 0.8, 0.8);</span><br><span class="line">	glutSolidSphere(0.25f, 100, 100);  //身体</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(0.0, 0.0, 0.0);</span><br><span class="line">	glTranslatef(0.05, 0.08, 0.23);</span><br><span class="line">	glutSolidSphere(0.013f, 1000, 1000);  //左眼</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(0.0, 0.0, 0.0);</span><br><span class="line">	glTranslatef(-0.05, 0.08, 0.23);</span><br><span class="line">	glutSolidSphere(0.013f, 1000, 1000);  //右眼</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(1.0, 0.0, 0.0);</span><br><span class="line">	glTranslatef(-0.01, 0.01, 0.23);</span><br><span class="line">	glScaled(1.35, -1.0, 1.0);</span><br><span class="line">	glutSolidSphere(0.06f, 1000, 1000);  //嘴巴</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(1.0, 0.5, 0.5);</span><br><span class="line">	glTranslatef(0.0175, 0.01, 0.23);</span><br><span class="line">	glutSolidSphere(0.013f, 1000, 1000);  //左鼻孔</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(1.0, 0.5, 0.5);</span><br><span class="line">	glTranslatef(-0.0175, 0.01, 0.23);</span><br><span class="line">	glutSolidSphere(0.013f, 1000, 1000);  //右鼻孔</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	// 绘制三角形，耳朵</span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(1.0, 0.5, 0.5);</span><br><span class="line">	glBegin(GL_TRIANGLES);</span><br><span class="line">	glVertex3f(0.2, 0.28, 0.15);</span><br><span class="line">	glVertex3f(0.19, 0.06, 0.15);</span><br><span class="line">	glVertex3f(0.07, 0.21, 0.1);</span><br><span class="line"></span><br><span class="line">	glVertex3f(0.2, 0.28, 0.15);</span><br><span class="line">	glVertex3f(0.07, 0.21, 0.1);</span><br><span class="line">	glVertex3f(0.12, 0.2, 0.08);</span><br><span class="line"></span><br><span class="line">	glVertex3f(0.2, 0.28, 0.15);</span><br><span class="line">	glVertex3f(0.19, 0.06, 0.15);</span><br><span class="line">	glVertex3f(0.12, 0.2, 0.08);</span><br><span class="line">	glEnd(); //左耳</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(1.0, 0.5, 0.5);</span><br><span class="line">	glBegin(GL_TRIANGLES);</span><br><span class="line">	glVertex3f(-0.2, 0.28, 0.15);</span><br><span class="line">	glVertex3f(-0.19, 0.06, 0.15);</span><br><span class="line">	glVertex3f(-0.07, 0.21, 0.1);</span><br><span class="line"></span><br><span class="line">	glVertex3f(-0.2, 0.28, 0.15);</span><br><span class="line">	glVertex3f(-0.07, 0.21, 0.1);</span><br><span class="line">	glVertex3f(-0.12, 0.2, 0.08);</span><br><span class="line"></span><br><span class="line">	glVertex3f(-0.2, 0.28, 0.15);</span><br><span class="line">	glVertex3f(-0.19, 0.06, 0.15);</span><br><span class="line">	glVertex3f(-0.12, 0.2, 0.08);</span><br><span class="line">	glEnd(); //右耳</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	// 手</span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(1.0, 0.5, 0.5);</span><br><span class="line">	glTranslatef(0.30, -0.2, 0.1);</span><br><span class="line">	glScaled(2.0,-1.0,2.0);</span><br><span class="line">	glutSolidSphere(0.035f, 50, 1000);  </span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(1.0, 0.5, 0.5);</span><br><span class="line">	glTranslatef(-0.30, -0.2, 0.1);</span><br><span class="line">	glScaled(2.0,1.0, 2.0);</span><br><span class="line">	glutSolidSphere(0.035f, 50, 1000);  </span><br><span class="line">	glPopMatrix();</span><br><span class="line">	// 脚</span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(0.0, 0.0, 0.0);</span><br><span class="line">	glTranslatef(0.07, -0.4, 0.1);</span><br><span class="line">	glutSolidSphere(0.05f, 1000, 1000);  //左脚</span><br><span class="line">	glPopMatrix();</span><br><span class="line"></span><br><span class="line">	glPushMatrix();</span><br><span class="line">	glColor3f(0.0, 0.0, 0.0);</span><br><span class="line">	glTranslatef(-0.07, -0.4, 0.1);</span><br><span class="line">	glutSolidSphere(0.05f, 1000, 1000);  //右脚</span><br><span class="line">	glPopMatrix();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><img src="/2019/07/06/Task6/Task6_1.png" title="This is an image">
+<img src="/2019/07/06/Task6/Task6_2.png" title="This is an image">
+<img src="/2019/07/06/Task6/Task6_3.png" title="This is an image">
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年7月6日</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/06/Task6/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Task5" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/03/Task5/">Task5</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/03/Task5/" class="archive-article-date">
+  	<time datetime="2019-07-03T07:53:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task5-任务报告"><a href="#Task5-任务报告" class="headerlink" title="Task5 任务报告"></a>Task5 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>编写一C++控制台程序，读入ASCII格式PLY文件，计算读入模型的面积、体积，并将模型转换为ASCII格式STL文件输出（此处要计算面片法失）。</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 ”bunny.ply”（模型体积为126264.785mm3，模型面积为17282.37mm2）。</p>
+<p>2 输出：ASCII格式STL文件，模型体积、面积。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>1 建立数据结构：Point类存放点的坐标以及索引；Facet面片类存放三个点的坐标以及每个点三角面片的体积和面积的信息。<br>2 读取ply文件并计算面积体积。</p>
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// 求面积</span><br><span class="line">	   void getS()</span><br><span class="line">	   &#123;</span><br><span class="line">		   Point p0 = this-&gt;_vertex_1;</span><br><span class="line">		   Point p1 = this-&gt;_vertex_2;</span><br><span class="line">		   Point p2 = this-&gt;_vertex_3;</span><br><span class="line"></span><br><span class="line">		   double l1 = sqrt((p0._x - p1._x)*(p0._x - p1._x) + ((p0._y - p1._y)*(p0._y - p1._y)) + ((p0._z - p1._z)*(p0._z - p1._z)));</span><br><span class="line"></span><br><span class="line">		   double l2 = sqrt((p0._x - p2._x)*(p0._x - p2._x) + ((p0._y - p2._y)*(p0._y - p2._y)) + ((p0._z - p2._z)*(p0._z - p2._z)));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">		   double l3 = sqrt((p2._x - p1._x)*(p2._x - p1._x) + ((p2._y - p1._y)*(p2._y - p1._y)) + ((p2._z - p1._z)*(p2._z - p1._z)));</span><br><span class="line"></span><br><span class="line">		   double c = 1.0 / 2.0*(l1 + l2 + l3);</span><br><span class="line"></span><br><span class="line">		   this-&gt;s = sqrt(c*(c - l1)*(c - l2)*(c - l3));</span><br><span class="line"></span><br><span class="line">	   &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">// 求方向量</span><br><span class="line">	   void getNormal()</span><br><span class="line">	   &#123;</span><br><span class="line">		   Point p0 = this-&gt;_vertex_1;</span><br><span class="line">		   Point p1 = this-&gt;_vertex_2;</span><br><span class="line">		   Point p2 = this-&gt;_vertex_3;</span><br><span class="line">		   double v1x = p1._x - p0._x;</span><br><span class="line">		   double v1y = p1._y - p0._y;</span><br><span class="line">		   double v1z = p1._z - p0._z;</span><br><span class="line">		   double v2x = p2._x - p1._x;</span><br><span class="line">		   double v2y = p2._y - p1._y;</span><br><span class="line">		   double v2z = p2._z - p1._z;</span><br><span class="line">		   double x= v1y * v2z - v1z * v2y;</span><br><span class="line">		   double y= v1z * v2x - v1x * v2z;</span><br><span class="line">		   double z= v1x * v2y - v1y * v2x;</span><br><span class="line">		   double len = sqrt(x*x + y * y + z * z);</span><br><span class="line">		   if (len == 0)</span><br><span class="line">		   &#123;</span><br><span class="line"></span><br><span class="line">		   &#125;</span><br><span class="line">		   else &#123;</span><br><span class="line">			   list.push_back(x / len);</span><br><span class="line">			   list.push_back(y / len);</span><br><span class="line">			   list.push_back(z / len);</span><br><span class="line">		   &#125;</span><br><span class="line">	   &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 求体积</span><br><span class="line"> void  getVolume()</span><br><span class="line">	   &#123;</span><br><span class="line">		   Point p0 = this-&gt;_vertex_1;</span><br><span class="line">		   Point p1 = this-&gt;_vertex_2;</span><br><span class="line">		   Point p2 = this-&gt;_vertex_3;</span><br><span class="line">		   double v1 = p2._x*p1._y*p0._z;</span><br><span class="line"></span><br><span class="line">		   double v2 = p1._x*p2._y*p0._z;</span><br><span class="line"></span><br><span class="line">		   double v3 = p2._x*p0._y*p1._z;</span><br><span class="line"></span><br><span class="line">		   double v4 = p0._x*p2._y*p1._z;</span><br><span class="line"></span><br><span class="line">		   double v5 = p1._x*p0._y*p2._z;</span><br><span class="line"></span><br><span class="line">		   double v6 = p0._x*p1._y*p2._z;</span><br><span class="line"></span><br><span class="line">		  this-&gt;volume = (1.0 / 6.0)*(-v1 + v2 + v3 - v4 - v5 + v6);</span><br><span class="line">	   &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><img src="/2019/07/03/Task5/Task5_1.png" title="This is an image">
+<img src="/2019/07/03/Task5/Task5_2.png" title="This is an image">
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年7月3日</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/03/Task5/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Task4" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/01/Task4/">Task4</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/01/Task4/" class="archive-article-date">
+  	<time datetime="2019-07-01T07:53:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task4-任务报告"><a href="#Task4-任务报告" class="headerlink" title="Task4 任务报告"></a>Task4 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>编写一C++控制台程序，读入ASCII格式STL文件，通过MAP容器对顶点进行去重，并对去重后的顶点进行编号。之后计算所读入模型具有的孔洞个数，并将计算结果与计算时间输出</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 ”bunny.stl”（模型大小1.12M，带有孔洞特征）。</p>
+<p>2 输出：模型孔洞个数、计算孔洞所用时间。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>数据结构：点类，面片类。点类主要存储点的基本信息，包括index（索引），x,y,z(坐标)，面片信息。边的信息主要有面片信息，以及构成边的点的坐标，面片类构成面片的点三个点的信息以及索引。</p>
+<p>根据图像的封闭规则可以得到图像周围的邻接点数一定小于等于面片数，根据这个规则可以找到孔洞所对应的点，然后根据点找到孔洞所对应的面片，判断该点所对应的邻接点是否属于孔洞的点，如果属于，则进行保存。</p>
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">void getHolePoint()</span><br><span class="line">&#123;</span><br><span class="line">	for (auto it = pointmapnew.begin(); it != pointmapnew.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">		vector&lt;int&gt;list = it-&gt;second.listfacet;</span><br><span class="line">		Point point = it-&gt;second;</span><br><span class="line">		set&lt;Point&gt;templist;</span><br><span class="line">		//templist.insert(point);</span><br><span class="line">		cout &lt;&lt; &quot;list&quot; &lt;&lt; list.size() &lt;&lt; endl;</span><br><span class="line">		for (int i = 0; i &lt; list.size(); i++)</span><br><span class="line">		&#123;</span><br><span class="line">			// 找到对应的面片</span><br><span class="line">			auto it=facetdate.find(list[i]);</span><br><span class="line">			if (it !=  facetdate.end())</span><br><span class="line">			&#123;</span><br><span class="line">				if (it-&gt;second._vertex_1.isEque(point))</span><br><span class="line">				&#123;</span><br><span class="line">					templist.insert(it-&gt;second._vertex_2);</span><br><span class="line">					templist.insert(it-&gt;second._vertex_3);</span><br><span class="line">				&#125;</span><br><span class="line">				else if (it-&gt;second._vertex_2.isEque(point))</span><br><span class="line">				&#123;</span><br><span class="line">					templist.insert(it-&gt;second._vertex_1);</span><br><span class="line">					templist.insert(it-&gt;second._vertex_3);</span><br><span class="line">				&#125;</span><br><span class="line">				else if (it-&gt;second._vertex_3.isEque(point))</span><br><span class="line">				&#123;</span><br><span class="line">					templist.insert(it-&gt;second._vertex_2);</span><br><span class="line">					templist.insert(it-&gt;second._vertex_1);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		cout &lt;&lt; &quot;listfacet&quot;&lt;&lt;point.listfacet.size() &lt;&lt; endl;</span><br><span class="line">		cout &lt;&lt; &quot;templist&quot;&lt;&lt;templist.size() &lt;&lt; endl;</span><br><span class="line">		if (templist.size() &gt;point.listfacet.size())</span><br><span class="line">		&#123;</span><br><span class="line">			listhole.insert(pair&lt;Point,int&gt;(it-&gt;second,0));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	cout &lt;&lt; &quot;listhole:&quot;&lt;&lt;listhole.size() &lt;&lt; endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><img src="/2019/07/01/Task4/Task4_1.png" title="This is an image">
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年7月1日</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/01/Task4/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Task3" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/27/Task3/">Task3</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/27/Task3/" class="archive-article-date">
+  	<time datetime="2019-06-27T07:39:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task3-任务报告"><a href="#Task3-任务报告" class="headerlink" title="Task3 任务报告"></a>Task3 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>编写一C++控制台程序，读入ASCII格式STL文件，通过MAP容器对顶点进行去重，并对去重后的顶点进行编号。之后通过控制台交互输入一个指定的顶点编号Index与指定环数N，输出位于该节点N环领域内的总顶点数（包含所指定的顶点），并记录下搜索时间（输入Index与N后程序运行的时间）</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 输入文件”bunny.stl”（模型大小21.7M）、指定顶点的序号Index、环数N。</p>
+<p>2 输出：指定顶点在N环领域内的总节点数、搜索时间。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>在读取文件的同时，使用map分别来存储点以及面片的信息，在存储点的信息的同时使用vector<int>来存储点所对应的面片的序号。在进行n环领域搜索时，首先根据index下标来找到对应的点，然后根据点可以得到点所对应的所有面片的下标，将面片中对应的邻接点加入到_listPointTemp中，加入时需要判断该点是否已经存在。</int></p>
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">// 查找n环领域</span><br><span class="line">void GetFieldcirculation(int index, int nField)</span><br><span class="line">&#123;</span><br><span class="line">	int size = 0;</span><br><span class="line">	// 根据index找到点,注意重复问题，已经判断的点不能再次加入</span><br><span class="line">	list&lt;int&gt;_listPointTemp;</span><br><span class="line">	auto ittt = vecPoint.find(index);</span><br><span class="line">	cout &lt;&lt;&quot;vecPointSize &quot;  &lt;&lt;vecPoint.size() &lt;&lt; endl;</span><br><span class="line">	if (ittt != vecPoint.end())</span><br><span class="line">	&#123;</span><br><span class="line">		getPoint = ittt-&gt;second;</span><br><span class="line">	&#125;</span><br><span class="line">	_listPointTemp.push_back(index);</span><br><span class="line">	listPoint.insert(index);</span><br><span class="line">	while (nField &gt; 0)</span><br><span class="line">	&#123;</span><br><span class="line">		int start = 0, size = _listPointTemp.size();</span><br><span class="line">		while ((!_listPointTemp.empty()) &amp;&amp; (start &lt; size))</span><br><span class="line">		&#123;</span><br><span class="line">			// 出栈,返回第一个函数</span><br><span class="line">			index = _listPointTemp.front();</span><br><span class="line">			_listPointTemp.pop_front();</span><br><span class="line">			for (auto it = vecPoint.begin();it != vecPoint.end();it++)</span><br><span class="line">			&#123;</span><br><span class="line">				if (index == it-&gt;second.index)</span><br><span class="line">				&#123;</span><br><span class="line">					vector&lt;int&gt;listInt = it-&gt;second.listfacet;</span><br><span class="line">					for (auto i = listInt.begin();i != listInt.end();i++)</span><br><span class="line">					&#123;</span><br><span class="line">						auto it = mapFacet.find(*i);</span><br><span class="line">						//Facet facet=it-&gt;second;</span><br><span class="line">						if (listPoint.count(it-&gt;second._vertex_1.index) == 0)</span><br><span class="line">						&#123;</span><br><span class="line">							listPoint.insert(it-&gt;second._vertex_1.index);</span><br><span class="line">							_listPointTemp.push_back(it-&gt;second._vertex_1.index);</span><br><span class="line">							_setPoint.insert(it-&gt;second._vertex_1);</span><br><span class="line">						&#125;</span><br><span class="line">						if (listPoint.count(it-&gt;second._vertex_2.index) == 0)</span><br><span class="line">						&#123;</span><br><span class="line">							listPoint.insert(it-&gt;second._vertex_2.index);</span><br><span class="line">							_listPointTemp.push_back(it-&gt;second._vertex_2.index);</span><br><span class="line">							_setPoint.insert(it-&gt;second._vertex_2);</span><br><span class="line"></span><br><span class="line">						&#125;</span><br><span class="line">						if (listPoint.count(it-&gt;second._vertex_3.index) == 0)</span><br><span class="line">						&#123;</span><br><span class="line">							listPoint.insert(it-&gt;second._vertex_3.index);</span><br><span class="line">							_listPointTemp.push_back(it-&gt;second._vertex_3.index);</span><br><span class="line">							_setPoint.insert(it-&gt;second._vertex_3);</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">					break;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">			size--;</span><br><span class="line">		&#125;</span><br><span class="line">		nField--;</span><br><span class="line">	&#125;</span><br><span class="line">	cout &lt;&lt; &quot; list is :&quot; &lt;&lt; listPoint.size() &lt;&lt; endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><img src="/2019/06/27/Task3/Task3_1.png" title="This is an image">
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年6月27</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/27/Task3/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Task2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/Task2/">Task2</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/Task2/" class="archive-article-date">
+  	<time datetime="2019-06-23T04:26:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task2-任务报告"><a href="#Task2-任务报告" class="headerlink" title="Task2 任务报告"></a>Task2 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>编写C++控制台程序，分别应用Vector、Map、Set等容器实现读取ASCII类型STL文件，并另存为ASCII、Binary格式PLY文件，并分别记录程序运行的时间</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 输入文件“test.stl”(模型大小30M)。</p>
+<p>2 输出：”test.ply”(ASCII)、“test.ply”(Binary)</p>
+<p>3 将程序运行所得的ply文件用Geomagic软件打开，模型正常显示，则程序运行成功。</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>使用Point类以及Facet类分别存储点的信息以及面片的信息，Point由四部分组成：x坐标，y坐标，z坐标以及index点的位置信息。<br>vector:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 数据读取</span><br><span class="line">	vector&lt;Point&gt;nodeDate;</span><br><span class="line">	vector&lt;Facet&gt;facetsDate;</span><br></pre></td></tr></table></figure>
+
+<p>对sort算法实现重载来实现排序，采用erase实现去重</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sort(nodeDate.begin(), nodeDate.end());</span><br><span class="line">nodeDate.erase(unique(nodeDate.begin(), nodeDate.end()), nodeDate.end());</span><br></pre></td></tr></table></figure>
+
+<p>map:采用将点存在map的key中，map实现自动去重，然后获得去重后的点的信息，并更新点的index，在获取面片信息的时候，直接将点加入到面片中，就可以将面片，点对应起来。<br>set:使用set容器存储面片和点的信息,采用set的不能重复机制，实现点的去重。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">std::set&lt;Point&gt;pointDate;</span><br><span class="line">std::set&lt;Facet&gt;facetDate;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><p>以下是map实现的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line">// 使用map保存stl数据</span><br><span class="line">void mapDate()</span><br><span class="line">&#123;</span><br><span class="line">	// 数据读取</span><br><span class="line">	int count = 0;</span><br><span class="line">	map&lt;Point, int&gt;_mapPoint;</span><br><span class="line">	map&lt;int, Facet&gt;_mapFacet;</span><br><span class="line">	vector&lt;Point&gt;nodeDate;</span><br><span class="line">	vector&lt;Facet&gt;facetsDate;</span><br><span class="line">	vector&lt;int&gt;facetList;</span><br><span class="line">	vector&lt;Facet&gt;facetsDate1;</span><br><span class="line">	map&lt;string, int&gt;_hopelist;</span><br><span class="line">	map&lt;Point, int&gt;listPoint;</span><br><span class="line">	int trangle = 0;</span><br><span class="line">	string s;</span><br><span class="line">	string str;</span><br><span class="line">	Facet facet1;</span><br><span class="line">	int countPoint = 0;</span><br><span class="line">	ifstream fin(&quot;D:\\vs2017projects\\Task3\\test.stl&quot;, ios::in);</span><br><span class="line">	float x1, y1, z1;</span><br><span class="line">	float x2, y2, z2;</span><br><span class="line">	float x3, y3, z3;</span><br><span class="line">	fin &gt;&gt; s &gt;&gt; s &gt;&gt; str;</span><br><span class="line">	while (str == &quot;facet&quot;)</span><br><span class="line">	&#123;</span><br><span class="line">		Facet facet1;</span><br><span class="line">		fin &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; s &gt;&gt; x1 &gt;&gt; y1 &gt;&gt; z1 &gt;&gt; s</span><br><span class="line">			&gt;&gt; x2 &gt;&gt; y2 &gt;&gt; z2 &gt;&gt; s</span><br><span class="line">			&gt;&gt; x3 &gt;&gt; y3 &gt;&gt; z3 &gt;&gt; s &gt;&gt; s &gt;&gt; str;</span><br><span class="line">		// 存储点的信息</span><br><span class="line">		Point point1(x1, y1, z1);</span><br><span class="line">		Point point2(x2, y2, z2);</span><br><span class="line">		Point point3(x3, y3, z3);</span><br><span class="line">		nodeDate.push_back(point1);</span><br><span class="line">		nodeDate.push_back(point2);</span><br><span class="line">		nodeDate.push_back(point3);</span><br><span class="line">		// 面片信息存储</span><br><span class="line">		facet1.addFacet(point1);</span><br><span class="line">		facet1.addFacet(point2);</span><br><span class="line">		facet1.addFacet(point3);</span><br><span class="line">		_mapFacet.insert(pair&lt;int, Facet&gt;(trangle, facet1));</span><br><span class="line">		trangle++;</span><br><span class="line">		if (str == &quot;endsolid&quot;)</span><br><span class="line">		&#123;</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	for (auto it = nodeDate.begin();it != nodeDate.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">		_mapPoint.insert(pair&lt;Point,int&gt;(*it,0));</span><br><span class="line">	&#125;</span><br><span class="line">	int mapcount = 0;</span><br><span class="line">	for (auto it = _mapPoint.begin();it != _mapPoint.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">		it-&gt;second = mapcount;</span><br><span class="line">		mapcount++;</span><br><span class="line">	&#125;</span><br><span class="line">	cout &lt;&lt; _mapPoint.size() &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; _mapFacet.size() &lt;&lt; endl;</span><br><span class="line">	for (auto it = _mapFacet.begin();it != _mapFacet.end();it++)</span><br><span class="line">	&#123;</span><br><span class="line">		Point point1 = it-&gt;second._facelist[0];</span><br><span class="line">		auto itt = _mapPoint.find(point1);</span><br><span class="line">		if (itt != _mapPoint.end())</span><br><span class="line">		&#123;</span><br><span class="line">			it-&gt;second.index1 = itt-&gt;second;</span><br><span class="line">			//cout &lt;&lt; it-&gt;second.index1 &lt;&lt; endl;</span><br><span class="line">		&#125;</span><br><span class="line">		Point point2 = it-&gt;second._facelist[1];</span><br><span class="line">		itt = _mapPoint.find(point2);</span><br><span class="line">		if (itt != _mapPoint.end())</span><br><span class="line">		&#123;</span><br><span class="line">			it-&gt;second.index2 = itt-&gt;second;</span><br><span class="line">			//cout &lt;&lt; it-&gt;second.index2 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line">		Point point3 = it-&gt;second._facelist[2];</span><br><span class="line">		itt = _mapPoint.find(point3);</span><br><span class="line">		if (itt != _mapPoint.end())</span><br><span class="line">		&#123;</span><br><span class="line">			it-&gt;second.index3 = itt-&gt;second;</span><br><span class="line">			//cout &lt;&lt; it-&gt;second.index3 &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	string fileName= &quot;D:\\vs2017projects\\Task2\\maptest.ply&quot;;</span><br><span class="line">	ofstream OpenFile(fileName.c_str());</span><br><span class="line">	OpenFile.precision(std::numeric_limits&lt;double&gt;::digits10);</span><br><span class="line">	//ofstream OpenFile(&quot;D:\\vs2017projects\\Task2\\testmap.ply&quot;);</span><br><span class="line">	if (OpenFile.fail())</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;打开文件错误!&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	OpenFile &lt;&lt; &quot;ply&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;format ascii 1.0&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;comment generated by platoply&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;element vertex &quot; &lt;&lt; _mapPoint.size() &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 x&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 y&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property float32 z&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;element face &quot; &lt;&lt; _mapFacet.size() &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;property list uint8 int32 vertex_indices&quot; &lt;&lt; endl;</span><br><span class="line">	OpenFile &lt;&lt; &quot;end_header&quot; &lt;&lt; endl;</span><br><span class="line">	// 读取点的信息</span><br><span class="line">	for (auto iter = _mapPoint.begin(); iter != _mapPoint.end(); iter++)</span><br><span class="line">	&#123;</span><br><span class="line">		OpenFile &lt;&lt; iter-&gt;first.x &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;first.y &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;first.z &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	for (auto iter = _mapFacet.begin(); iter != _mapFacet.end(); iter++)</span><br><span class="line">	&#123;</span><br><span class="line">		OpenFile &lt;&lt; &quot; &quot; &lt;&lt; 3 &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second.index1 &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second.index2 &lt;&lt; &quot; &quot; &lt;&lt; iter-&gt;second.index3 &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="·运行结果-1"><a href="#·运行结果-1" class="headerlink" title="·运行结果 1"></a>·运行结果 1</h3>
+
+
+<h3 id="·运行结果-2"><a href="#·运行结果-2" class="headerlink" title="·运行结果 2"></a>·运行结果 2</h3>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年6月23</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/Task2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Task1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -159,7 +935,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/22/Task1/">my-first-blog</a>
+      <a class="article-title" href="/2019/06/22/Task1/">Task1</a>
     </h1>
   
 
@@ -331,6 +1107,42 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">2019年6月22</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年6月23</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年7月3日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年6月27</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">2019年7月16日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年7月6日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年7月8日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年7月1日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">2019年7月10日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">2019年7月12日</a>
               </li>
             
             <div class="clearfix"></div>
