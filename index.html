@@ -152,6 +152,146 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Task2-1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/28/Task2-1/">Task2_1</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/28/Task2-1/" class="archive-article-date">
+  	<time datetime="2019-07-28T03:58:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Task2-1-任务报告"><a href="#Task2-1-任务报告" class="headerlink" title="Task2-1 任务报告"></a>Task2-1 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>编写C++MFC程序，要求在MFC的视图中利用鼠标画多边形，并按要求利用横线或竖线进行填充。利用对话框控制线的数量或密度，以及横线或竖线，并可以重复画线或填充。</p>
+<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>界面显示</p>
+<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><h4 id="画鼠标点击画多边形"><a href="#画鼠标点击画多边形" class="headerlink" title="画鼠标点击画多边形"></a>画鼠标点击画多边形</h4><p>使用MFC内置的OnLButtonDown(UINT nFlags, CPoint point)函数实现。</p>
+<p>首先使用cpoint记录上次鼠标点击的点，然后当鼠标下一次点击后，将上一次的点与这一次的点使用CDC以及CPen画笔连接成线。</p>
+<p>在此过程中，使用firstpoint记录第一个点的信息，当第一个点和最后一个点之间的距离小于某一个阈值时，将第一个点和最后一个点连接起来，形成封闭的多边形，至此多边形绘制完毕。</p>
+<h4 id="多边形扫描线填充算法（有序边算法）绘制横线"><a href="#多边形扫描线填充算法（有序边算法）绘制横线" class="headerlink" title="多边形扫描线填充算法（有序边算法）绘制横线"></a>多边形扫描线填充算法（有序边算法）绘制横线</h4><h5 id="边表创建ET"><a href="#边表创建ET" class="headerlink" title="边表创建ET"></a>边表创建ET</h5><p>在扫描线填充算法中，采用了有序边算法。具体实现思想图下：在这个算法中，主要的就是需要建立一个边表和一个活性表。边表使用map&lt;int,list<edge>&gt;来存储，EDGE是一个边表的结构体，主要由ymax(边的最大y坐标)，xi（交点坐标），dx（这条边斜率的倒数），map之中的int表示的是ymin（边的最小y坐标），由此就建立了边表的信息。如下图所示：</edge></p>
+<img src="/2019/07/28/Task2-1/坐标图.PNG" title="This is an image">
+<img src="/2019/07/28/Task2-1/边表.PNG" title="This is an image">
+<h5 id="顶点问题处理"><a href="#顶点问题处理" class="headerlink" title="顶点问题处理"></a>顶点问题处理</h5><p>在建立完边表，其实还存在一个问题，就是如何处理多边形顶点的问题，在对多边形进行求交的过程中，扫描线会和每一条边都有一个交点，然而在顶点处则会出现两个交点，在这个过程中，错误的计算交点个数，会对填充造成影响。如下图所示：</p>
+<img src="/2019/07/28/Task2-1/顶点图.PNG" title="This is an image">
+
+<p>对于以上出现的这种情况，我们只需要更新边表的信息，也就是修改以终点为顶点的边，删除这条边的终点。</p>
+<h5 id="水平边处理"><a href="#水平边处理" class="headerlink" title="水平边处理"></a>水平边处理</h5><p>对于水平边，也就是两个边的y值相同的边，不加入边表中。</p>
+<h5 id="活性边创建AET"><a href="#活性边创建AET" class="headerlink" title="活性边创建AET"></a>活性边创建AET</h5><p>首先定义一个std::list<edge>AET，来存储每一条扫描线所对应的边表信息。</edge></p>
+<p>假设边表中，最小的y值为a，则第一条扫描边为y=a,并将a所对应的边表中的list<edge>插入到AET中，然后需要对AET进行排序。</edge></p>
+<p>之后就是进行算法部分了，每次从AET中取出一个边并获得与扫描线的交点坐标，也就是对应的x1=xi,并对xi进行更新（每次都加该边的斜率即可）,接着获取AET中的第二个节点，x2=xi，后续操作与第一个节点类似。</p>
+<p>接着判断这两个交点坐标是否相等，不相等的话则使用容器存下这两个交点坐标。遍历完AET，使用y++，获得第二条扫描线，这个时候需要判断AET中的所有边是否在该扫描线的范围之内，只需判断y值与改变的ymax的大小即可，如果ymax小于y值，则表明该边扫描结束，将改变从AET容器中删除。</p>
+<p>接着并将扫描线对应的边表信息加入到AET中，并对AET进行排序，重复上面的动作，直到扫描线的y值大于YMAX(该多边形的最大y值)结束。</p>
+<h5 id="对话框与view视图类之间的通信"><a href="#对话框与view视图类之间的通信" class="headerlink" title="对话框与view视图类之间的通信"></a>对话框与view视图类之间的通信</h5><p>这里采用了非模态框，原因是因为模态框数据输入完成后会关闭。这里使用SendMessage来实现对话框（SelectDialog）与view（Task2_1View）之间的自定义消息的通信。</p>
+<p>首先，我们需要在SelectDialog.h以及Task2_1View.h中加入下面的宏定义：</p>
+<p>#define WM_MY_MESSAGE (WM_USER+100)</p>
+<p>接着在SelectDialog.cpp中定义#include”MainFrm.h”</p>
+<p>测试消息函数（SelectDialog中实现）：<br>表示按下该按钮时，从SelectDialog发送信息到Task2_1View中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">void SelectDialog::OnBnClickedButton1()</span><br><span class="line">&#123;</span><br><span class="line">	space = GetDlgItemInt(IDC_EDIT1);</span><br><span class="line">	checkbox1 = ((CButton *)GetDlgItem(IDC_CHECK1))-&gt;GetCheck();</span><br><span class="line">	checkbox2 = ((CButton *)GetDlgItem(IDC_CHECK2))-&gt;GetCheck();</span><br><span class="line">	CMainFrame* pMF = (CMainFrame*)AfxGetApp()-&gt;m_pMainWnd;  //先通过获取当前框架指针</span><br><span class="line">	CView * active = pMF-&gt;GetActiveView();//才能获取当前视类指针</span><br><span class="line">	if (active != NULL)  //获取了当前视类指针才能发送消息</span><br><span class="line">		active-&gt;SendMessage(WM_MY_MESSAGE, space,checkbox1);   //使用PostMessage发送消息</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着在Task2_1View.h中定义消息映射函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">afx_msg LRESULT OnMyMessage(WPARAM wParam, LPARAM lParam);</span><br></pre></td></tr></table></figure>
+
+<p>接着在Task2_1View.cpp中声明响应函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BEGIN_MESSAGE_MAP(CTask21View, CView)</span><br><span class="line">  ON_MESSAGE(WM_MyMessage,&amp;CTask21View::OnMyMessage)</span><br><span class="line">END_MESSAGE_MAP()</span><br></pre></td></tr></table></figure>
+
+<p>接着添加消息响应函数实现：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LRESULT CTask21View::OnMyMessage(WPARAM wParam, LPARAM lParam)</span><br><span class="line">&#123;</span><br><span class="line">    MessageBox(_T(&quot;OnMyMessage!&quot;));</span><br><span class="line">    return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这两个参数就是从active-&gt;SendMessage(WM_MY_MESSAGE, space,checkbox1)中传过来的第二个以及第三个参数，这里的参数形式可以自己定义。</p>
+<p>e.g:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">LRESULT CTask21View::OnMyMessage(WPARAM wParam, LPARAM lParam)</span><br><span class="line">&#123;</span><br><span class="line">	CString str;</span><br><span class="line">	int space = wParam;</span><br><span class="line">	int checkbox1 = lParam;</span><br><span class="line">	str.Format(_T(&quot;间距: %d ;  是否选择横线(0未选择，1选择): %d&quot;), space, checkbox1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="MFC中实现console控制台的调用"><a href="#MFC中实现console控制台的调用" class="headerlink" title="MFC中实现console控制台的调用"></a>MFC中实现console控制台的调用</h5><p>首先添加如下函数并在初始化时进行调用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">void InitConsoleWindow()</span><br><span class="line">&#123;</span><br><span class="line">	AllocConsole();</span><br><span class="line">	HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);</span><br><span class="line">	int hCrt = _open_osfhandle((long)handle, _O_TEXT);</span><br><span class="line">	FILE * hf = _fdopen(hCrt, &quot;w&quot;);</span><br><span class="line">	*stdout = *hf;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">AllocConsole();                     // 打开控制台资源</span><br><span class="line">freopen(&quot;CONOUT$&quot;, &quot;w+t&quot;, stdout);// 申请写</span><br><span class="line">// 输出内容</span><br><span class="line">freopen(&quot;CONIN$&quot;, &quot;r+t&quot;, stdin);  // 申请读</span><br></pre></td></tr></table></figure>
+
+<p>除此之外还需进行配置，不然会报错。配置过程如下：<br>项目-&gt;属性-&gt;C/C++ -&gt;预处理器-&gt;编辑预处理器定义-&gt;加入：_CRT_SECURE_NO_WARNINGS<br>_DEBUG。</p>
+<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><h4 id="绘制多边形"><a href="#绘制多边形" class="headerlink" title="绘制多边形"></a>绘制多边形</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">void CTask21View::OnLButtonDown(UINT nFlags, CPoint point)</span><br><span class="line">&#123;</span><br><span class="line">	// TODO: 在此添加消息处理程序代码和/或调用默认值</span><br><span class="line">	</span><br><span class="line">	// 暂存的点</span><br><span class="line">	// 定义一个画笔变量</span><br><span class="line">	if (drawflag == -2)</span><br><span class="line">	&#123;</span><br><span class="line">		CPen penBlack;</span><br><span class="line">		CDC*pDC = GetDC();</span><br><span class="line">		penBlack.CreatePen(PS_SOLID, 2, RGB(255, 0, 0));</span><br><span class="line">		CPen*poldPen = pDC-&gt;SelectObject(&amp;penBlack);</span><br><span class="line">		// 上次的点</span><br><span class="line">		CPoint tempPoint = cpoint;</span><br><span class="line">		// 这次的点</span><br><span class="line">		cpoint = point;</span><br><span class="line">		//pDC-&gt;SetPixel(point, RGB(1, 0, 0));</span><br><span class="line">		if (sum != 0)</span><br><span class="line">		&#123;</span><br><span class="line">			// 将当前点加入到点存储器中</span><br><span class="line">			freopen(&quot;CONOUT$&quot;, &quot;w+t&quot;, stdout);// 申请写</span><br><span class="line">			cout &lt;&lt; &quot;point: &quot; &lt;&lt; point.x &lt;&lt; &quot; &quot; &lt;&lt; point.y &lt;&lt; endl;</span><br><span class="line">			freopen(&quot;CONIN$&quot;, &quot;r+t&quot;, stdin);  // 申请读</span><br><span class="line">			listPoint.push_back(point);</span><br><span class="line">			pDC-&gt;MoveTo(tempPoint.x, tempPoint.y);</span><br><span class="line">			pDC-&gt;LineTo(cpoint.x, cpoint.y);</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			freopen(&quot;CONOUT$&quot;, &quot;w+t&quot;, stdout);// 申请写</span><br><span class="line">			cout &lt;&lt; &quot;point: &quot; &lt;&lt; point.x &lt;&lt; &quot; &quot; &lt;&lt; point.y &lt;&lt; endl;</span><br><span class="line">			freopen(&quot;CONIN$&quot;, &quot;r+t&quot;, stdin);  // 申请读</span><br><span class="line">			listPoint.push_back(point);</span><br><span class="line">			firstpoint = point;</span><br><span class="line">		&#125;</span><br><span class="line">		dis = sqrt((firstpoint.x - cpoint.x)*(firstpoint.x - cpoint.x) + (firstpoint.y - cpoint.y)*(firstpoint.y - cpoint.y));</span><br><span class="line">		if (dis &lt; 100)</span><br><span class="line">		&#123;</span><br><span class="line">			pDC-&gt;MoveTo(firstpoint.x, firstpoint.y);</span><br><span class="line">			pDC-&gt;LineTo(cpoint.x, cpoint.y);</span><br><span class="line">		&#125;</span><br><span class="line">		sum++;</span><br><span class="line">	&#125;</span><br><span class="line">	else</span><br><span class="line">	&#123;</span><br><span class="line">		MessageBox(_T(&quot;没有点击绘图哦！&quot;));</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	CView::OnLButtonDown(nFlags, point);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="多边形扫描线填充有序边算法实现"><a href="#多边形扫描线填充有序边算法实现" class="headerlink" title="多边形扫描线填充有序边算法实现"></a>多边形扫描线填充有序边算法实现</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">// 构建边表</span><br><span class="line">void GetNET()</span><br><span class="line">&#123;</span><br><span class="line">	</span><br><span class="line">	for (int i = 0;i &lt; listPoint.size() - 1;i++)</span><br><span class="line">	&#123;</span><br><span class="line">		// 平行边判定</span><br><span class="line">		if (listPoint[i + 1].y == listPoint[i].y)</span><br><span class="line">			continue;</span><br><span class="line">		// 斜率的倒数</span><br><span class="line">		float dx=0;</span><br><span class="line">		double a = listPoint[i + 1].y - listPoint[i].y;</span><br><span class="line">		if (a == 0)</span><br><span class="line">		&#123;</span><br><span class="line">			 dx = 0.0;</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			 dx = (listPoint[i + 1].x - listPoint[i].x)*1.0 / (listPoint[i + 1].y - listPoint[i].y);</span><br><span class="line"></span><br><span class="line">		&#125;</span><br><span class="line">		// xi低端点的x值，x高端点的x值</span><br><span class="line">		float ymax, xi, ymin;</span><br><span class="line">		if (listPoint[i + 1].y &gt; listPoint[i].y)</span><br><span class="line">		&#123;</span><br><span class="line">			ymax = listPoint[i + 1].y;</span><br><span class="line">			ymin = listPoint[i].y;</span><br><span class="line">			xi = listPoint[i].x;</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			ymax = listPoint[i].y;</span><br><span class="line">			ymin = listPoint[i+1].y;</span><br><span class="line">			xi = listPoint[i+1].x;</span><br><span class="line">		&#125;</span><br><span class="line">		EDGE e(ymax, xi, dx);</span><br><span class="line">		ET[ymin].push_back(e);</span><br><span class="line">		if (ymax &gt; YMAX)</span><br><span class="line">		&#123;</span><br><span class="line">			YMAX = ymax;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	// 第一个点与最后一个点所构成的边</span><br><span class="line">	int index = listPoint.size() - 1;</span><br><span class="line">	if (listPoint[0].y != listPoint[index].y)</span><br><span class="line">	&#123;</span><br><span class="line">		float dx = listPoint[index].y - listPoint[0].y == 0 ? 0 : (listPoint[index].x - listPoint[0].x)*1.0 / (listPoint[index].y - listPoint[0].y);</span><br><span class="line">		// xi低端点的x值，x高端点的x值</span><br><span class="line">		float ymax, xi, ymin;</span><br><span class="line">		if (listPoint[index].y &gt; listPoint[0].y)</span><br><span class="line">		&#123;</span><br><span class="line">			ymax = listPoint[index].y;</span><br><span class="line">			ymin = listPoint[0].y;</span><br><span class="line">			xi = listPoint[0].x;</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			ymax = listPoint[0].y;</span><br><span class="line">			ymin = listPoint[index].y;</span><br><span class="line">			xi = listPoint[index].x;</span><br><span class="line">		&#125;</span><br><span class="line">		EDGE e(ymax, xi, dx);</span><br><span class="line">		ET[ymin].push_back(e);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 更新ET，将特殊点进行特殊处理</span><br><span class="line">void UpdateET()</span><br><span class="line">&#123;</span><br><span class="line">	for (auto it = ET.begin();it != ET.end();)</span><br><span class="line">	&#123;</span><br><span class="line">		// 只存在一条边</span><br><span class="line">		if (it-&gt;second.size() == 1)</span><br><span class="line">		&#123;</span><br><span class="line">			EDGE e = *(it-&gt;second.begin());</span><br><span class="line">			e.xi += e.dx;</span><br><span class="line">			int ymin = it-&gt;first + 1;</span><br><span class="line">			ET.erase(it++);</span><br><span class="line">			ET[ymin].push_back(e);</span><br><span class="line">		&#125;</span><br><span class="line">		else</span><br><span class="line">		&#123;</span><br><span class="line">			it++;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">// 处理活动边表</span><br><span class="line">void ModifyAET()</span><br><span class="line">&#123;</span><br><span class="line">	// 建立活动边表</span><br><span class="line">	//创建活动边表并填充</span><br><span class="line">	std::list&lt;EDGE&gt;AET;</span><br><span class="line">	int y = 0;</span><br><span class="line">	int count = 0;</span><br><span class="line">	//获取首元素</span><br><span class="line">	y = ET.begin()-&gt;first;</span><br><span class="line">	cout &lt;&lt; &quot;y is &quot; &lt;&lt; y &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot; YMAX IS &quot; &lt;&lt; YMAX &lt;&lt;&quot; &quot;&lt;&lt; endl;</span><br><span class="line">	AET.insert(AET.begin(), ET.begin()-&gt;second.begin(), ET.begin()-&gt;second.end());</span><br><span class="line">	AET.sort();</span><br><span class="line">	do &#123;</span><br><span class="line">		auto aet = AET.begin();</span><br><span class="line">		while (aet != AET.end())</span><br><span class="line">		&#123;</span><br><span class="line">			// 获取与扫描线交点的值</span><br><span class="line">			float x1 = aet-&gt;xi;</span><br><span class="line">			// </span><br><span class="line">			aet-&gt;xi += aet-&gt;dx;</span><br><span class="line">			aet++;</span><br><span class="line">			if (aet != AET.end())</span><br><span class="line">			&#123;</span><br><span class="line">				float x2 = aet-&gt;xi;</span><br><span class="line">				aet-&gt;xi += aet-&gt;dx;</span><br><span class="line">				aet++;</span><br><span class="line">				// 获取填充线坐标</span><br><span class="line">				if (x1 != x2) </span><br><span class="line">				&#123;</span><br><span class="line">					vector&lt;MyPoint&gt;listp;</span><br><span class="line">					</span><br><span class="line">					listp.push_back(MyPoint(x1, y));</span><br><span class="line">					listp.push_back(MyPoint(x2, y));</span><br><span class="line">					IntePoint.insert(pair&lt;int, vector&lt;MyPoint&gt;&gt;(count, listp));</span><br><span class="line">					count++;</span><br><span class="line">				&#125;</span><br><span class="line">				cout &lt;&lt; &quot;x1: &quot; &lt;&lt; x1 &lt;&lt; &quot; x2: &quot; &lt;&lt; x2 &lt;&lt; &quot; y: &quot; &lt;&lt; y&lt;&lt;&quot; &quot;&lt;&lt;endl;</span><br><span class="line">			&#125;	</span><br><span class="line">		&#125;</span><br><span class="line">		y++;</span><br><span class="line">		// 逆序迭代器，指向c容器的最后一个元素</span><br><span class="line">		// 如果y大于ymax，表示扫描线大于最大y值</span><br><span class="line">		std::list&lt;EDGE&gt;::reverse_iterator it = AET.rbegin();</span><br><span class="line">		for (; it != AET.rend();) &#123;</span><br><span class="line">			if (y &gt;it-&gt;ymax)</span><br><span class="line">				it = std::list&lt;EDGE&gt;::reverse_iterator(AET.erase((++it).base()));</span><br><span class="line">			else it++;</span><br><span class="line">		&#125;</span><br><span class="line">		// 找到扫描线对应的活性表</span><br><span class="line">		auto itt=ET.find(y);</span><br><span class="line">		if (itt != ET.end())</span><br><span class="line">			AET.insert(AET.end(), ET[y].begin(), ET[y].end());</span><br><span class="line">		AET.sort();</span><br><span class="line">		// 如过y大于YMAX,直接退出</span><br><span class="line">	&#125; while ((y&lt;YMAX));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="多边形扫描线填充算法（有序边算法）绘制竖线"><a href="#多边形扫描线填充算法（有序边算法）绘制竖线" class="headerlink" title="多边形扫描线填充算法（有序边算法）绘制竖线"></a>多边形扫描线填充算法（有序边算法）绘制竖线</h4><p>竖线的绘制方法和横线类似，这里不再赘述，只需将y转变成x，斜率变化为横线时的倒数即可。</p>
+<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><p>没有点击绘图按钮，不会开始绘图</p>
+<img src="/2019/07/28/Task2-1/Task21_1.PNG" title="This is an image">
+<p>多边形绘制</p>
+<img src="/2019/07/28/Task2-1/Task21_2.PNG" title="This is an image">
+<p>开始填充可以任意间距，选择横线，竖线的选择</p>
+<img src="/2019/07/28/Task2-1/Task21_3.PNG" title="This is an image">
+<img src="/2019/07/28/Task2-1/Task21_4.PNG" title="This is an image">
+<p>点击重绘之后</p>
+<img src="/2019/07/28/Task2-1/Task21_5.PNG" title="This is an image">
+<p>横线绘制</p>
+<img src="/2019/07/28/Task2-1/Task21_6.PNG" title="This is an image">
+<h3 id="·遇到的问题总结"><a href="#·遇到的问题总结" class="headerlink" title="·遇到的问题总结"></a>·遇到的问题总结</h3><p>1 在计算斜率的时候没有考虑精度问题，导致填充不成功。</p>
+<p>2 循环的时候没有考虑完整，导致绘制了不完全。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">2019年7月28日</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/28/Task2-1/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Task10" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -928,91 +1068,10 @@
 
 
   
-    <article id="post-Task1" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/22/Task1/">Task1</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/22/Task1/" class="archive-article-date">
-  	<time datetime="2019-06-22T06:57:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Task1-任务报告"><a href="#Task1-任务报告" class="headerlink" title="Task1 任务报告"></a>Task1 任务报告</h1><h2 id="任务内容"><a href="#任务内容" class="headerlink" title="任务内容"></a>任务内容</h2><h3 id="·任务说明"><a href="#·任务说明" class="headerlink" title="·任务说明"></a>·任务说明</h3><p>1 编写C++控制台程序，实现ASCII类型STL文件的读取。</p>
-<h3 id="·输入输出"><a href="#·输入输出" class="headerlink" title="·输入输出"></a>·输入输出</h3><p>1 输入文件“test.stl”(模型大小30M)。</p>
-<p>2 输出：总面片数，节点数，程序运行时间。</p>
-<h2 id="任务完成情况"><a href="#任务完成情况" class="headerlink" title="任务完成情况"></a>任务完成情况</h2><h3 id="·实现思路"><a href="#·实现思路" class="headerlink" title="·实现思路"></a>·实现思路</h3><p>1 ASCII类型STL文件的读取:使用c++的ifstream实现对stl文件的按行读取。</p>
-<p>2 保存tsl文件数据：使用自定义类Point来保存每一个点的信息，存放于map容器中，map的size表示结点的总数。</p>
-<p>3 面片信息存放：使用自定义类Facet来存放每一个面片，存放于map容器中，key表示第几个面片，value表示面片的信息。<br>4 去重，采用map的key值不能重复的特性，对点进行去重。重载operator&lt;函数。</p>
-<h3 id="·实现代码"><a href="#·实现代码" class="headerlink" title="·实现代码"></a>·实现代码</h3><h4 id="·点类实现代码"><a href="#·点类实现代码" class="headerlink" title="·点类实现代码"></a>·点类实现代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#pragma once</span><br><span class="line">class Point</span><br><span class="line">&#123;</span><br><span class="line">	// 第几个点</span><br><span class="line">	int index; </span><br><span class="line"></span><br><span class="line">	// 点的三维坐标</span><br><span class="line">	double x; </span><br><span class="line">	double y; </span><br><span class="line">	double z;</span><br><span class="line">public:</span><br><span class="line">	Point(double x1, double y1, double z1) &#123;</span><br><span class="line">		x = x1;</span><br><span class="line">		y = y1;</span><br><span class="line">		z = z1;</span><br><span class="line">	&#125;</span><br><span class="line">	Point() &#123;&#125;</span><br><span class="line">	bool operator&lt;(const Point&amp; b)const</span><br><span class="line">	&#123;</span><br><span class="line">		//return false;</span><br><span class="line">		return (x &lt; b.x) || (x == b.x) &amp;&amp; (y &lt; b.y) || (x == b.x &amp;&amp; y == b.y &amp;&amp; z &lt; b.z);</span><br><span class="line"></span><br><span class="line">		//return true;</span><br><span class="line">		// 相等比较 </span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="·面片类代码"><a href="#·面片类代码" class="headerlink" title="·面片类代码"></a>·面片类代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#pragma once</span><br><span class="line">#include&quot;Point.h&quot;</span><br><span class="line">#include &lt;vector&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">class Facet</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	// 第几个面片</span><br><span class="line">	int index; </span><br><span class="line">	// 面片的各个点的信息</span><br><span class="line">	Point x; Point y; Point z;</span><br><span class="line">	// 存放面片钟各点的信息</span><br><span class="line">	vector&lt;Point&gt;_facetList;</span><br><span class="line"></span><br><span class="line">public:</span><br><span class="line"></span><br><span class="line">	Facet(Point x1, Point y1, Point z1)&#123;</span><br><span class="line">		x = x1;</span><br><span class="line">		y = y1;</span><br><span class="line">		z = z1;</span><br><span class="line">	&#125;</span><br><span class="line">	void addFacet(Point point)</span><br><span class="line">	&#123;</span><br><span class="line">		_facetList.push_back(point);</span><br><span class="line">	&#125;</span><br><span class="line">	Facet() &#123;&#125;;</span><br></pre></td></tr></table></figure>
-
-<h4 id="·数据读取代码"><a href="#·数据读取代码" class="headerlink" title="·数据读取代码"></a>·数据读取代码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">bool ReadASCII()</span><br><span class="line">&#123;</span><br><span class="line">	map&lt;int, Facet&gt; mapList;</span><br><span class="line">	map&lt;Point, int&gt;_mapPointList;</span><br><span class="line">	string s;</span><br><span class="line">	string str;</span><br><span class="line">	int count = 0;</span><br><span class="line">	//点数</span><br><span class="line">	int i = 0;</span><br><span class="line">	//面片数</span><br><span class="line">	int trangle = 0;</span><br><span class="line">	Facet facet1;</span><br><span class="line">	ifstream fin(&quot;D:\\vs2017projects\\Task3\\test.stl&quot;,ios::in);</span><br><span class="line">	float x1, y1, z1;</span><br><span class="line">	float x2, y2, z2;</span><br><span class="line">	float x3, y3, z3;</span><br><span class="line">	fin &gt;&gt; s &gt;&gt; s &gt;&gt; str;</span><br><span class="line">	while (str ==&quot;facet&quot;) </span><br><span class="line">	&#123;</span><br><span class="line">			fin &gt;&gt; s&gt;&gt;s&gt;&gt;s&gt;&gt;s&gt;&gt;s&gt;&gt;s&gt;&gt;s &gt;&gt; x1 &gt;&gt; y1 &gt;&gt; z1&gt;&gt;s</span><br><span class="line">				&gt;&gt;x2&gt;&gt;y2&gt;&gt;z2&gt;&gt;s</span><br><span class="line">				&gt;&gt;x3&gt;&gt;y3&gt;&gt;z3&gt;&gt;s&gt;&gt;s&gt;&gt;str;</span><br><span class="line">			Point point1(x1,y1,z1);</span><br><span class="line">			Point point2(x2, y2, z2);</span><br><span class="line">			Point point3(x3, y3, z3);</span><br><span class="line">			_mapPointList.insert(pair&lt;Point,int&gt;(point1,0));</span><br><span class="line">			_mapPointList.insert(pair&lt;Point, int&gt;(point2, 0));</span><br><span class="line">			_mapPointList.insert(pair&lt;Point, int&gt;(point3, 0));</span><br><span class="line">			Facet facet1;</span><br><span class="line">			facet1.addFacet(point1);</span><br><span class="line">			facet1.addFacet(point2);</span><br><span class="line">			facet1.addFacet(point3);</span><br><span class="line">			mapList.insert(pair&lt;int, Facet&gt;(trangle, facet1));</span><br><span class="line">			trangle++;</span><br><span class="line">			if (str == &quot;endsolid&quot;)</span><br><span class="line">			&#123;</span><br><span class="line">				break;</span><br><span class="line">			&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	cout &lt;&lt; &quot;面片数&quot; &lt;&lt; mapList.size() &lt;&lt; endl;</span><br><span class="line">	cout &lt;&lt; &quot;节点数&quot; &lt;&lt; _mapPointList.size() &lt;&lt; endl;</span><br><span class="line">	return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="·运行结果"><a href="#·运行结果" class="headerlink" title="·运行结果"></a>·运行结果</h3><img src="/2019/06/22/Task1/Task1.PNG" title="This is an image">
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">2019年6月22</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/22/Task1/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 
 
@@ -1110,27 +1169,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">2019年6月23</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">2019年7月3日</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">2019年6月27</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">2019年7月16日</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">2019年7月6日</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">2019年7月8日</a>
+                <a href="javascript:void(0)" class="js-tag color5">2019年6月23</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1142,7 +1185,27 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年7月3日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年6月27</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年7月8日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">2019年7月12日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">2019年7月6日</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">2019年7月28日</a>
               </li>
             
             <div class="clearfix"></div>
